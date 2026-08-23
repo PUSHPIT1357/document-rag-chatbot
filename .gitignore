@@ -1,0 +1,14 @@
+# Environment
+.env
+venv/
+env/
+__pycache__/
+*.pyc
+
+# Vector store / data
+chroma_db_free/
+uploads/*
+!uploads/.gitkeep
+
+# OS
+.DS_Store

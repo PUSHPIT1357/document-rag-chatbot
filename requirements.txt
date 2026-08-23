@@ -1,0 +1,21 @@
+# Core NLP & ML Libraries
+sentence-transformers==2.2.2
+torch>=2.2.0
+numpy>=1.24.0
+tqdm>=4.66.0
+
+# Vector Database & Embeddings
+chromadb==0.4.22
+
+# PDF Processing
+pypdf==3.17.0
+langchain==0.0.340
+
+# Web Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+streamlit==1.28.1
+
+# Utilities
+python-multipart==0.0.6
+typing-extensions>=4.8.0
