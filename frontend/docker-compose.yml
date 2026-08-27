@@ -1,0 +1,59 @@
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  ledger:
+    build:
+      context: .
+      args:
+        PREFETCH_MODELS: "1"
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      # Persist uploaded docs and the Chroma vector store across restarts/redeploys.
+      - uploads_data:/app/uploads
+      - chroma_data:/app/chroma_db_free
+      - eval_reports_data:/app/eval_reports
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./ledger-frontend
+      args:
+        # Baked into the client bundle at build time — must be reachable
+        # from the BROWSER, not just from inside the Docker network, so this
+        # should be the backend's public URL in production, not "http://ledger:8000".
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - ledger
+
+volumes:
+  redis_data:
+  uploads_data:
+  chroma_data:
+  eval_reports_data:

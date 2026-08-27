@@ -1,0 +1,9 @@
+node_modules/
+.tanstack/
+.output/
+dist/
+.git/
+.env
+.env.local
+*.log
+.DS_Store
